@@ -117,6 +117,10 @@ void CoinCliqueList::computeNodeOccurrences(size_t nNodes)
     abort();
   }
 
+  /// @question: element 和 node之间的关系是什么？（node是实例，element是实例对应的 not“地址” is"编号"）
+  /// 借用noc，将startNodeOccur_空间分配
+  /// clqEls_[i] 是一系列pointer，指向不同的node
+  /// @question: 为什么noc[clqEls_[i]]不会越界（node是实例，element是实例对应的 not“地址” is"编号"）
   for ( size_t i=0 ; (i<nCliqueElements_) ; ++i )
     noc[clqEls_[i]]++;
 
@@ -124,8 +128,11 @@ void CoinCliqueList::computeNodeOccurrences(size_t nNodes)
   for ( size_t in=1 ; (in<(nNodes+1)) ; ++in )
     startNodeOccur_[in] = startNodeOccur_[in-1] + noc[in-1];
 
+  /// 重新将noc各个元素归零
   memset( noc, 0, sizeof(size_t)*nNodes );
 
+  /// 借用noc，统计不同node的总个数
+  /// 将nodeOccur_不同node出现在哪些clique中赋值
   nDifferent_ = 0;
   for ( size_t ic=0 ; ic<nCliques() ; ++ic ) {
     for ( size_t j=0 ; (j<cliqueSize(ic)) ; ++j ) {
@@ -137,6 +144,7 @@ void CoinCliqueList::computeNodeOccurrences(size_t nNodes)
     }
   }
 
+  /// 重新将noc各个元素归零
   memset( noc, 0, sizeof(size_t)*nNodes );
 
   diffNodes_ = (size_t *) xmalloc( sizeof(size_t)*nDifferent_ );
